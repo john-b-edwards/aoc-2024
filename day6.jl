@@ -23,12 +23,13 @@ while inbounds
         global cord = new_cord
     end
 end
+ref_mat = copy(mat)
 println(length(findall(x->x == "X",mat)) + 1)
 # part two
-global counter = 0
+global counter = 1
 mat = mapreduce(permutedims, vcat, input)
 stored_mat = copy(mat)
-for i in tqdm(eachindex(mat))
+for i in tqdm(findall(x->x == "X",ref_mat))
     global mat = copy(stored_mat)
     if !(mat[i] in keys(MOVES)) & (mat[i] != "#")
         movement_mat = fill(".",size(mat))
