@@ -5,25 +5,20 @@ using CategoricalArrays
 input = get_input(2024,5)
 # part one
 find_sum_med(vec) = sum(parse.(Int64,getindex.(vec,Int.(floor.(length.(vec) ./ 2) .+ 1))))
-orders = split.(input[1:1176],"|")
-pages = split.(input[1177:end],",")
-correct_pages = [page for page in pages 
-                    if !any([(order[1] in page) & (order[2] in page) && 
-                        findfirst(x -> x == order[1],page) > findfirst(x -> x == order[2],page) 
-                            for order in orders])]
-println(find_sum_med(correct_pages))
+rules = split.(input[occursin.("|",input)],"|")
+orders = split.(input[occursin.(",",input)],",")
+correct_orders = [order for order in orders 
+                    if !any([(rule[1] in order) & (rule[2] in order) && 
+                        findfirst(x -> x == rule[1],order) > findfirst(x -> x == rule[2],order) 
+                            for rule in rules])]
+println(find_sum_med(correct_orders))
 # part two
-wrong_pages = pages[.!in.(pages,[correct_pages])]
-for page in wrong_pages
-    n_pages = length(page)
-        for i = 1:n_pages-1
-            for j = 2:n_pages
-                if !in([page[j-1],page[j]],orders)
-                    tmp = page[j-1]
-                    page[j-1] = page[j]
-                    page[j] = tmp
-                end
-            end
-        end
+wrong_orders = orders[.!in.(orders,[correct_orders])]
+for order in wrong_orders, i in 1:length(order)-1, j in 2:length(order)
+    if !in([order[j-1],order[j]],rules)
+        tmp = order[j-1]
+        order[j-1] = order[j]
+        order[j] = tmp
+    end
 end
-println(find_sum_med(wrong_pages))
+println(find_sum_med(wrong_orders))
