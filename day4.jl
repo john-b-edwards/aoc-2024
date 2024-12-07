@@ -26,14 +26,12 @@ n_diag_4 = search_xmas(reverse.(join.(diags_2)))
 println(n_left + n_right + n_up + n_down + n_diag_1 + n_diag_2 + n_diag_3 + n_diag_4)
 # part two
 global counter = 0
-for i in 1:size(mat)[1]-2
-    for j in 1:size(mat)[2]-2
-        slice = mat[i:(i+2),j:(j+2)]
-        slice_diag_1 = slice[1,1] * slice[2,2] * slice[3,3]
-        slice_diag_2 = slice[1,3] * slice[2,2] * slice[3,1]
-        if ((slice_diag_1== "MAS") | (slice_diag_1 == "SAM")) & ((slice_diag_2 == "MAS") | (slice_diag_2 == "SAM"))
-            global counter = counter + 1
-        end
+for i in 1:size(mat)[1]-2, j in 1:size(mat)[2]-2
+    slice = mat[i:(i+2),j:(j+2)]
+    slice_diag_1 = slice[1,1] * slice[2,2] * slice[3,3]
+    slice_diag_2 = slice[1,3] * slice[2,2] * slice[3,1]
+    if ((slice_diag_1== "MAS") | (slice_diag_1 == "SAM")) & ((slice_diag_2 == "MAS") | (slice_diag_2 == "SAM"))
+        global counter = counter + 1
     end
 end
 println(counter)
