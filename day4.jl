@@ -6,15 +6,7 @@ input = get_input(2024,4)
 input = split.(input,"")
 # part one
 search_xmas(x) = sum(length.(findall.(r"XMAS",x)))
-function transpose_str(x)
-    new_arr = fill(" ",size(x))
-    for i in 1:size(x)[1]
-        for j in 1:size(x)[2]
-            new_arr[i,j] = x[j,i]
-        end
-    end
-    return new_arr
-end
+transpose_str(x) = permutedims(x, (2,1))
 mat = mapreduce(permutedims, vcat, input)
 rev_mat = mapreduce(permutedims, vcat, reverse.(input))
 # look left and right
