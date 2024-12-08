@@ -3,7 +3,7 @@ include("Utils.jl")
 using .Utils
 using OrderedCollections
 using ProgressBars
-input = get_input(2024,6)
+input = get_example(2024,6)
 input = split.(input,"")
 mat = mapreduce(permutedims, vcat, input)
 # part one
@@ -14,6 +14,7 @@ global inbounds, cord = true, Tuple.(start)[1]
 while inbounds
     new_cord = make_move(cord)
     if (new_cord[1] > size(mat)[1]) | (new_cord[1] < 1) | (new_cord[2] > size(mat)[2]) | (new_cord[2] < 1)
+        mat[cord...] = "X"
         global inbounds = false
     elseif mat[new_cord...] == "#"
         mat[cord...] = String.(keys(MOVES))[mod(findall(x->x == mat[cord...],String.(keys(MOVES)))[1],4) + 1]
@@ -23,13 +24,13 @@ while inbounds
         global cord = new_cord
     end
 end
-ref_mat = copy(mat)
-println(length(findall(x->x == "X",mat)) + 1)
+println(length(findall(x->x == "X",mat)))
 # part two
-global counter = 1
+ref_mat = copy(mat)
+global counter = 0
 mat = mapreduce(permutedims, vcat, input)
 stored_mat = copy(mat)
-for i in tqdm(findall(x->x == "X",ref_mat))
+for i in findall(x->x == "X",ref_mat)
     global mat = copy(stored_mat)
     if !(mat[i] in keys(MOVES)) & (mat[i] != "#")
         movement_mat = fill(".",size(mat))

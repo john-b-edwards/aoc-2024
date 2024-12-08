@@ -31,4 +31,4 @@ function test_line(i, ops)
 end
 println(sum(test_line.(input, [["+","*"]])))
 # part two
-println(sum(test_line.(input, [["+","*","||"]])))
+@time println(sum(test_line.(input, [["+","*","||"]])))
