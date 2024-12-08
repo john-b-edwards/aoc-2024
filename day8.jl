@@ -25,22 +25,13 @@ for char in chars
     for pair in Iterators.product(findall(x->x == char, input),findall(x->x == char, input))
         if pair[1] != pair[2]
             antinode_one, antinode_two = pair[1] + (pair[1] - pair[2]), pair[2] + (pair[2] - pair[1])
-            inbounds_one, inbounds_two = true, true
-            while inbounds_one
-                if inbounds_test(antinode_one, rows, cols) 
-                    refmat[antinode_one] = "#" 
-                    antinode_one = antinode_one + (pair[1] - pair[2])
-                else
-                    inbounds_one = false
-                end
+            while inbounds_test(antinode_one, rows, cols) 
+                refmat[antinode_one] = "#" 
+                antinode_one = antinode_one + (pair[1] - pair[2])
             end
-            while inbounds_two
-                if inbounds_test(antinode_two, rows, cols) 
-                    refmat[antinode_two] = "#" 
-                    antinode_two = antinode_two + (pair[2] - pair[1])
-                else
-                    inbounds_two = false
-                end
+            while inbounds_test(antinode_two, rows, cols) 
+                refmat[antinode_two] = "#" 
+                antinode_two = antinode_two + (pair[2] - pair[1])
             end
         end
     end
