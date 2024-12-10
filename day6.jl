@@ -9,13 +9,13 @@ mat = mapreduce(permutedims, vcat, input)
 # part one
 MOVES = OrderedDict("^" => [-1,0],">" => [0,1],"v" => [1,0],"<" => [0,-1])
 make_move(cord) = cord .+ MOVES[mat[cord...]]
+is_inbounds(cord, rows, cols) = (cord[1] > rows) | (cord[1] < 1) | (cord[2] > cols) | (cord[2] < 1)
 start = findall(x->x in ["^",">","v","<"],mat)
-global inbounds, cord = true, Tuple.(start)[1]
-while inbounds
+global cord = Tuple.(start)[1]
+while is_inbounds(cord)
     new_cord = make_move(cord)
-    if (new_cord[1] > size(mat)[1]) | (new_cord[1] < 1) | (new_cord[2] > size(mat)[2]) | (new_cord[2] < 1)
+    if is_inbounds(new_cord)
         mat[cord...] = "X"
-        global inbounds = false
     elseif mat[new_cord...] == "#"
         mat[cord...] = String.(keys(MOVES))[mod(findall(x->x == mat[cord...],String.(keys(MOVES)))[1],4) + 1]
     else
