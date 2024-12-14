@@ -3,7 +3,7 @@ include("Utils.jl")
 using .Utils
 using JuMP
 using COPT
-input = get_example(2024,13)
+input = get_input(2024,13)
 # part one
 input = [Dict("button_a" => (parse(Int64,input[x-2][3][2:end-1]),parse(Int64,input[x-2][4][2:end])),
               "button_b" => (parse(Int64,input[x-1][3][2:end-1]),parse(Int64,input[x-1][4][2:end])),
@@ -30,6 +30,6 @@ function solve_machine(machine, upper_bound = 100, value_offset = 0)
         return 3 * Int(value(A)) + Int(value(B))
     end
 end
-Int(sum(solve_machine.(input)))
+println(Int(sum(solve_machine.(input))))
 # part two
-Int(sum(solve_machine.(input, missing, 10000000000000)))
+println(Int(sum(solve_machine.(input, missing, 10000000000000))))
