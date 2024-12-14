@@ -1,7 +1,6 @@
 # input
 include("Utils.jl")
 using .Utils
-using ProgressBars
 input = get_input(2024,9)
 input = split(string(input[1]),"")
 calc_checksum(my_vec) = sum([(x-1) * my_vec[x] for x in eachindex(my_vec) if my_vec[x] != "."])
