@@ -2,90 +2,56 @@
 include("Utils.jl")
 using .Utils
 input = get_input(2024,12)
-#= input = get_example(2024,12,override="AAAAAA
-AAABBA
-AAABBA
-ABBAAA
-ABBAAA
-AAAAAA") =#
 input = split.(input,"")
 input = mapreduce(permutedims, vcat, input)
 input = [string(x) for x in input]
 # part one
-# group and search
+# test if point is inbounds
+inbounds(G, v) = (v[1] > 0) & (v[1] <= size(G)[1]) & (v[2] > 0) & (v[2] <= size(G)[2])
+# for a point, find all other points in its group
 function find_all_in_group(G, root)
     Q = [root]
     explored = [root]
     valid = [root]
     while Q != []
         v = pop!(Q)
-        for i in -1:1, j in -1:1
-            if (abs(i) != abs(j)) && 
-                (v[1] + i > 0) & 
-                (v[1] + i <= size(G)[1]) & 
-                (v[2] + j > 0) & 
-                (v[2] + j <= size(G)[2])
-                point = CartesianIndex(v[1] + i, v[2] + j)
-                if G[point] == G[root] && !in(point, explored)
-                    push!(Q, point)
-                    push!(valid, point)
-                    push!(explored, point)
-                end
+        for (i,j) in [(-1,0),(1,0),(0,-1,),(0,1)]
+            if inbounds(G, (v[1] + i,v[2] + j)) && 
+                G[CartesianIndex(v[1] + i, v[2] + j)] == G[root] && 
+                !in(CartesianIndex(v[1] + i, v[2] + j), explored)
+                push!.([Q,valid,explored], [CartesianIndex(v[1] + i, v[2] + j)])
             end
         end
     end
     return valid
 end
-
-function calc_value(group)
-    total_sides = 0
-    for g in group
-        sides = 4
-        if CartesianIndex(g[1] + 1, g[2]) in group
-            sides = sides - 1
-        end
-        if CartesianIndex(g[1] - 1, g[2]) in group
-            sides = sides - 1
-        end
-        if CartesianIndex(g[1], g[2] + 1) in group
-            sides = sides - 1
-        end
-        if CartesianIndex(g[1], g[2] - 1) in group
-            sides = sides - 1
-        end
-        total_sides = total_sides + sides
-    end
-    return total_sides * length(group)
+# calculate the value for the number of perimeters for each square
+function calc_value_1(group)
+    return sum([(4 - sum(in.(CartesianIndex.(
+            [(g[1] + 1, g[2]),(g[1] - 1, g[2]),(g[1], g[2] + 1),(g[1], g[2] - 1)]
+        ),[group]))) for g in group]) * length(group)
 end
-
+# find the number of unique groups
 groups = unique(collect(Iterators.flatten([[sort(find_all_in_group(input, CartesianIndex(i,j))) 
-for i in 1:size(input)[1]] 
-    for j in 1:size(input)[2]])))
-
-sum(calc_value.(groups))
+for i in 1:size(input)[1]] for j in 1:size(input)[2]])))
+println(sum(calc_value_1.(groups)))
 # part two
 # expand the matrix a little bit
 new_input = fill(" ", (size(input) .+ 2)...)
 new_input[2:size(input)[1] + 1, 2:size(input)[2] + 1] = input
 input = new_input
 groups = unique(collect(Iterators.flatten([[sort(find_all_in_group(input, CartesianIndex(i,j))) 
-for i in 1:size(input)[1]] 
-    for j in 1:size(input)[2]])))
+for i in 1:size(input)[1]] for j in 1:size(input)[2]])))
+# filter out the group w/ expanded space
 groups = [group for group in groups if input[group[1]] != " "]
+# calculate the number of corners (=the number of sides)
 function calc_value_2(group)
-    corners = 0
-    for i in 1:size(new_input)[1]-1
-        for j in 1:size(new_input)[2]-1
-            window = collect(Iterators.flatten([[CartesianIndex(x,y) for x in i:i+1] for y in j:j+1]))
-            if sum(in.(window, [group])) in [1,3]
-                corners = corners + 1
-            elseif (window[1] in group) & (window[4] in group) & !(window[2] in group) & !(window[3] in group)
-                corners = corners + 2
-            elseif (window[2] in group) & (window[3] in group) & !(window[4] in group) & !(window[1] in group)
-                corners = corners + 2
-            end
-        end
-    end
-    return corners * length(group)
+    return length(group) * 
+    sum(sum([[
+        ifelse(sum(in.(CartesianIndex.([(i,j),(i,j+1),(i+1,j),(i+1,j+1)]), [group])) in [1,3],1,
+        ifelse(((CartesianIndex(i,j) in group) & (CartesianIndex(i+1,j+1) in group) & !(CartesianIndex(i,j+1) in group) & !(CartesianIndex(i+1,j) in group)) | 
+        ((CartesianIndex(i,j+1) in group) & (CartesianIndex(i+1,j) in group) & !(CartesianIndex(i+1,j+1) in group) & !(CartesianIndex(i,j) in group)),2,0)) 
+        for i in 1:size(new_input)[1]-1] 
+            for j in 1:size(new_input)[2]-1]))
 end
 sum(calc_value_2.(groups))
