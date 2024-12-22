@@ -1,26 +1,24 @@
 # input
 include("Utils.jl")
 using .Utils
+using ProgressBars
 input = get_input(2024,19)
 # part one
 patterns = [string(x) for x in split(join(input[1]),",")]
 designs = [x[1] for x in input[2:end]]
-counter = 0
 stored = Dict()
-# h/t https://stackoverflow.com/questions/5996621/algorithm-for-checking-if-a-string-was-built-from-a-list-of-substrings
-function is_valid(s, w)
-    if s == "" return true
-    elseif s in keys(stored) return stored[s]
-    else 
-        global stored[s] = false
-        for n in w
-            if (length(n) <= length(s)) &&
-                (s[1:length(n)] == n) & is_valid(s[length(n)+1:end], w)
-                global stored[s] = true
-            end
+function is_valid(s)
+    if s in keys(stored) return stored[s] end
+    ans = 0
+    if s == "" ans = 1 end
+    for p in patterns
+        if occursin(Regex("^" * p), s)
+            ans = ans + is_valid(replace(s, p=>"",count=1))
         end
-        return stored[s]
     end
+    stored[s] = ans
+    return ans
 end
-println(sum(is_valid.(designs, [patterns])))
-# part two
+println(sum(is_valid.(designs) .> 0))
+# part two 
+println(sum(is_valid.(designs)))
