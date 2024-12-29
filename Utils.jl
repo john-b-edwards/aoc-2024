@@ -5,7 +5,7 @@ using HTTP
 export get_example
 export get_input
 
-AOC_SESSION = "53616c7465645f5f9642b31e0ec86d21a719690050401803130ad3f218a99c33e869ccf708bafd11e2ed7c580a46c8d57b7f0643b764215d2ca031dc23d0ef2c"
+AOC_SESSION = "secret"
 
 current_year() =  year(now(UTC))
 current_day() = day(now(UTC)) - ifelse((hour(now(UTC)) - 5) >= 0, 0, 1)
